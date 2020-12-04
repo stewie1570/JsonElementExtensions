@@ -5,13 +5,20 @@ using System.Text.Json;
 
 namespace dynamic_iteration
 {
+
+    public class PathAndValue
+    {
+        public string Path { get; set; }
+        public object Value { get; set; }
+    }
+
     public static class JsonElementPathsQueryExtensions
     {
-        public static List<string> Paths(this JsonElement element, string prefix = "")
+        public static List<PathAndValue> PathsAndValues(this JsonElement element, string prefix = "")
         {
             return IsIterable(element)
                 ? PropsFrom(element).SelectMany(AllSubPathsWith(prefix)).ToList()
-                : new List<string> { };
+                : new List<PathAndValue> { };
         }
 
         #region Helpers
@@ -22,14 +29,41 @@ namespace dynamic_iteration
             public JsonElement Value { get; set; }
         }
 
-        private static Func<string, Func<Property, IEnumerable<string>>> AllSubPathsWith =
+        private static Func<string, Func<Property, IEnumerable<PathAndValue>>> AllSubPathsWith =
             (string prefix) =>
             (Property prop) => IsIterable(prop.Value)
                 ? prop
                     .Value
-                    .Paths(prefix: prop.Name)
-                    .Select(subPath => subPath.PrefixWith(prefix))
-                : new List<string> { prop.Name.PrefixWith(prefix) };
+                    .PathsAndValues(prefix: prop.Name)
+                    .Select(subPath => new PathAndValue
+                    {
+                        Path = subPath.Path.PrefixWith(prefix),
+                        Value = subPath.Value
+                    })
+                : new List<PathAndValue> {
+                    new PathAndValue {
+                        Path = prop.Name.PrefixWith(prefix),
+                        Value = prop.Value.ToValue()
+                    }
+                };
+
+        private static object ToValue(this JsonElement element)
+        {
+            switch (element.ValueKind)
+            {
+                case JsonValueKind.True:
+                case JsonValueKind.False:
+                    return element.GetBoolean();
+                case JsonValueKind.Number:
+                    return element.GetDouble();
+                case JsonValueKind.Null:
+                    return null;
+                case JsonValueKind.String:
+                    return element.GetString();
+                default:
+                    return null;
+            }
+        }
 
         private static IEnumerable<Property> PropsFrom(JsonElement element)
         {

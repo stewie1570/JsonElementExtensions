@@ -13,23 +13,23 @@ namespace dynamic_iteration
             JsonDocument
                 .Parse("\"value\"")
                 .RootElement
-                .Paths()
+                .PathsAndValues()
                 .Should()
-                .BeEquivalentTo(new List<string> { });
+                .BeEquivalentTo(new List<PathAndValue> { });
         }
 
         [Fact]
         public void FindsShallowPaths()
         {
             JsonDocument
-                .Parse("{ \"prop1\": \"value\", \"prop2\": \"value\" }")
+                .Parse("{ \"prop1\": \"value1\", \"prop2\": \"value2\" }")
                 .RootElement
-                .Paths()
+                .PathsAndValues()
                 .Should()
-                .BeEquivalentTo(new List<string>
+                .BeEquivalentTo(new List<PathAndValue>
                 {
-                    "prop1",
-                    "prop2"
+                    new PathAndValue{ Path = "prop1", Value = "value1" },
+                    new PathAndValue{ Path = "prop2", Value = "value2" }
                 });
         }
 
@@ -42,12 +42,12 @@ namespace dynamic_iteration
                     ""contacts"": { ""info"": { ""name"": ""Stewie"" } }
                 }")
                 .RootElement
-                .Paths()
+                .PathsAndValues()
                 .Should()
-                .BeEquivalentTo(new List<string>
+                .BeEquivalentTo(new List<PathAndValue>
                 {
-                    "prop1.prop2",
-                    "contacts.info.name"
+                    new PathAndValue{ Path = "prop1.prop2", Value = "value" },
+                    new PathAndValue{ Path = "contacts.info.name", Value = "Stewie" }
                 });
         }
 
@@ -63,13 +63,13 @@ namespace dynamic_iteration
                     ]
                 }")
                 .RootElement
-                .Paths()
+                .PathsAndValues()
                 .Should()
-                .BeEquivalentTo(new List<string>
+                .BeEquivalentTo(new List<PathAndValue>
                 {
-                    "prop1.prop2",
-                    "contacts.0.info.name",
-                    "contacts.1.info.name"
+                    new PathAndValue{ Path = "prop1.prop2", Value = "value" },
+                    new PathAndValue{ Path = "contacts.0.info.name", Value = "Stewie" },
+                    new PathAndValue{ Path = "contacts.1.info.name", Value = "John" }
                 });
         }
     }
