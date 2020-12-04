@@ -29,6 +29,21 @@ namespace dynamic_iteration
         }
 
         [Fact]
+        public void GetValueInArray()
+        {
+            JsonDocument
+                .Parse(@"{ ""contacts"": [
+                    {""name"": ""tom""},
+                    {""name"": ""stewie""},
+                    {""name"": ""george""}
+                ] }")
+                .RootElement
+                .At("contacts.1.name")
+                .Should()
+                .Be("stewie");
+        }
+
+        [Fact]
         public void GetBoolean()
         {
             JsonDocument

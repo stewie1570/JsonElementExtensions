@@ -24,13 +24,20 @@ namespace dynamic_iteration
 
         private static JsonElement GetProp(this JsonElement element, string currentPropName)
         {
-            element.TryGetProperty(currentPropName, out var result);
-            return result;
+            return element.ValueKind == JsonValueKind.Array
+                ? element[int.Parse(currentPropName)]
+                : PropNavigation(element, currentPropName);
+
+            static JsonElement PropNavigation(JsonElement element, string currentPropName)
+            {
+                element.TryGetProperty(currentPropName, out var result);
+                return result;
+            }
         }
 
         private static object ValueFor(this JsonElement element, string path)
         {
-            element.TryGetProperty(path, out var result);
+            var result = element.GetProp(path);
             switch (result.ValueKind)
             {
                 case JsonValueKind.True:
