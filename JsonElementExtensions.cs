@@ -7,13 +7,13 @@ namespace dynamic_iteration
         public static object At(this JsonElement element, string path)
         {
             return element.ValueKind == JsonValueKind.Undefined ? null
-                : path.Contains(".") ? NextPropInPath(element, path)
+                : path.Contains(".") ? element.NextPropIn(path)
                 : element.ValueFor(path);
         }
 
         #region Helpers
 
-        private static object NextPropInPath(JsonElement element, string path)
+        private static object NextPropIn(this JsonElement element, string path)
         {
             var dotIndex = path.IndexOf('.');
             string currentPropName = path.Substring(0, dotIndex);
