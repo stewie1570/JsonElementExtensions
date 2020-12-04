@@ -4,7 +4,7 @@ using Xunit;
 
 namespace dynamic_iteration
 {
-    public class JsonElementExensionsTests
+    public class JsonElementExensionsValueQueryTests
     {
         [Fact]
         public void GetNumber()

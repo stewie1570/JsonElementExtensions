@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace dynamic_iteration
 {
-    public static class JsonElementExtensions
+    public static class JsonElementExtensionsValueQuery
     {
         public static object At(this JsonElement element, string path)
         {
