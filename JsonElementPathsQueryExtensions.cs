@@ -18,7 +18,13 @@ namespace dynamic_iteration
         {
             return IsIterable(element)
                 ? PropsFrom(element).SelectMany(AllSubPathsWith(prefix)).ToList()
-                : new List<PathAndValue> { };
+                : new List<PathAndValue> {
+                    new PathAndValue
+                    {
+                        Path = string.Empty,
+                        Value = element.ToValue()
+                    }
+                };
         }
 
         #region Helpers

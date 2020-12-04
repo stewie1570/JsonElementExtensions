@@ -15,7 +15,10 @@ namespace dynamic_iteration
                 .RootElement
                 .PathsAndValues()
                 .Should()
-                .BeEquivalentTo(new List<PathAndValue> { });
+                .BeEquivalentTo(new List<PathAndValue>
+                {
+                    new PathAndValue{ Path = "", Value="value" }
+                });
         }
 
         [Fact]
