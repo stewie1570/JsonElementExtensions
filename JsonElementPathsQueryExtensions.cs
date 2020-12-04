@@ -26,14 +26,14 @@ namespace dynamic_iteration
         private class Property
         {
             public string Name { get; set; }
-            public JsonElement Value { get; set; }
+            public JsonElement JsonValue { get; set; }
         }
 
         private static Func<string, Func<Property, IEnumerable<PathAndValue>>> AllSubPathsWith =
             (string prefix) =>
-            (Property prop) => IsIterable(prop.Value)
+            (Property prop) => IsIterable(prop.JsonValue)
                 ? prop
-                    .Value
+                    .JsonValue
                     .PathsAndValues(prefix: prop.Name)
                     .Select(subPath => new PathAndValue
                     {
@@ -43,7 +43,7 @@ namespace dynamic_iteration
                 : new List<PathAndValue> {
                     new PathAndValue {
                         Path = prop.Name.PrefixWith(prefix),
-                        Value = prop.Value.ToValue()
+                        Value = prop.JsonValue.ToValue()
                     }
                 };
 
@@ -79,7 +79,7 @@ namespace dynamic_iteration
                 .Select(index => new Property
                 {
                     Name = index.ToString(),
-                    Value = element[index]
+                    JsonValue = element[index]
                 });
         }
 
@@ -90,7 +90,7 @@ namespace dynamic_iteration
                 .Select(prop => new Property
                 {
                     Name = prop.Name,
-                    Value = prop.Value
+                    JsonValue = prop.Value
                 });
         }
 
