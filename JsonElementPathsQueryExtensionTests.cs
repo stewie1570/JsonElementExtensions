@@ -59,7 +59,8 @@ namespace dynamic_iteration
                     ""prop1"": { ""prop2"": ""value"" },
                     ""contacts"": [
                         { ""info"": { ""name"": ""Stewie"" } },
-                        { ""info"": { ""name"": ""John"" } }
+                        { ""info"": { ""number"": 12 } },
+                        { ""info"": { ""isAwesome"": true } }
                     ]
                 }")
                 .RootElement
@@ -69,7 +70,8 @@ namespace dynamic_iteration
                 {
                     new PathAndValue{ Path = "prop1.prop2", Value = "value" },
                     new PathAndValue{ Path = "contacts.0.info.name", Value = "Stewie" },
-                    new PathAndValue{ Path = "contacts.1.info.name", Value = "John" }
+                    new PathAndValue{ Path = "contacts.1.info.number", Value = 12 },
+                    new PathAndValue{ Path = "contacts.2.info.isAwesome", Value = true }
                 });
         }
     }
