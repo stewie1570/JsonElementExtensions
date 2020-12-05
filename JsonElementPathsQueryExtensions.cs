@@ -21,7 +21,7 @@ namespace dynamic_iteration
                 : new List<PathAndValue> {
                     new PathAndValue
                     {
-                        Path = string.Empty,
+                        Path = prefix,
                         Value = element.ToValue()
                     }
                 };
@@ -37,21 +37,14 @@ namespace dynamic_iteration
 
         private static Func<string, Func<Property, IEnumerable<PathAndValue>>> AllSubPathsWith =
             (string prefix) =>
-            (Property prop) => IsIterable(prop.JsonValue)
-                ? prop
-                    .JsonValue
-                    .PathsAndValues(prefix: prop.Name)
-                    .Select(subPath => new PathAndValue
-                    {
-                        Path = subPath.Path.PrefixWith(prefix),
-                        Value = subPath.Value
-                    })
-                : new List<PathAndValue> {
-                    new PathAndValue {
-                        Path = prop.Name.PrefixWith(prefix),
-                        Value = prop.JsonValue.ToValue()
-                    }
-                };
+            (Property prop) => prop
+                .JsonValue
+                .PathsAndValues(prefix: prop.Name)
+                .Select(subPath => new PathAndValue
+                {
+                    Path = subPath.Path.PrefixWith(prefix),
+                    Value = subPath.Value
+                });
 
         private static object ToValue(this JsonElement element)
         {
