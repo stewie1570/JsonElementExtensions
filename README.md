@@ -1,7 +1,7 @@
 # JsonElementExtensions
 
 ## Purpose ##
-*(expressed via a unit test*:
+*(expressed via a unit test)*:
 
 ```csharp
 [Fact]
