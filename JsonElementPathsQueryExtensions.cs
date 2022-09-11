@@ -10,6 +10,7 @@ namespace dynamic_iteration
     {
         public string Path { get; set; }
         public object Value { get; set; }
+        public JsonValueKind ValueKind { get; set; }
     }
 
     public static class JsonElementPathsQueryExtensions
@@ -22,7 +23,8 @@ namespace dynamic_iteration
                     new PathAndValue
                     {
                         Path = prefix,
-                        Value = element.ToValue()
+                        Value = element.ToValue(),
+                        ValueKind = element.ValueKind
                     }
                 };
         }
@@ -43,7 +45,8 @@ namespace dynamic_iteration
                 .Select(subPath => new PathAndValue
                 {
                     Path = subPath.Path.PrefixWith(prefix),
-                    Value = subPath.Value
+                    Value = subPath.Value,
+                    ValueKind = subPath.ValueKind
                 });
 
         private static object ToValue(this JsonElement element)
