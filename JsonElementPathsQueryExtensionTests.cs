@@ -116,7 +116,7 @@ namespace dynamic_iteration
                 ]
             }");
 
-            left.RootElement.Diff(right.RootElement)
+            left.RootElement.DiffWith(right.RootElement)
                 .Should()
                 .BeEquivalentTo(new Dictionary<string, Tuple<JsonValue, JsonValue>>
                 {

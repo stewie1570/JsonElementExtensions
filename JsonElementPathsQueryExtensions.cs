@@ -32,12 +32,12 @@ namespace dynamic_iteration
             return PathsAndValues(element, prefix).ToDictionary();
         }
 
-        public static Dictionary<string, Tuple<JsonValue, JsonValue>> Diff(this JsonElement element, JsonElement other)
+        public static Dictionary<string, Tuple<JsonValue, JsonValue>> DiffWith(this JsonElement element, JsonElement other)
         {
-            return element.PathsAndValuesDictionary().Diff(other.PathsAndValuesDictionary());
+            return element.PathsAndValuesDictionary().DiffWith(other.PathsAndValuesDictionary());
         }
 
-        public static Dictionary<string, Tuple<JsonValue, JsonValue>> Diff(this Dictionary<string, JsonValue> dict1, Dictionary<string, JsonValue> dict2)
+        public static Dictionary<string, Tuple<JsonValue, JsonValue>> DiffWith(this Dictionary<string, JsonValue> dict1, Dictionary<string, JsonValue> dict2)
         {
             var disctinctKeys = dict1.Keys.Concat(dict2.Keys).Distinct();
             return disctinctKeys
