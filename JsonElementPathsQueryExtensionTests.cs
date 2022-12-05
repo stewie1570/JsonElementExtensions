@@ -111,7 +111,8 @@ namespace dynamic_iteration
                 ""contacts"": [
                     { ""info"": { ""name"": ""Stewie"" } },
                     { ""info"": { ""number"": 13 } },
-                    { ""info"": { ""isAwesome"": false } }
+                    { ""info"": { ""isAwesome"": false } },
+                    { ""info"": { ""isSomething"": true } }
                 ]
             }");
 
@@ -127,7 +128,10 @@ namespace dynamic_iteration
                         new JsonValue { Value = 13, ValueKind = JsonValueKind.Number }),
                     ["contacts.2.info.isAwesome"] = new Tuple<JsonValue, JsonValue>(
                         new JsonValue { Value = true, ValueKind = JsonValueKind.True },
-                        new JsonValue { Value = false, ValueKind = JsonValueKind.False })
+                        new JsonValue { Value = false, ValueKind = JsonValueKind.False }),
+                    ["contacts.3.info.isSomething"] = new Tuple<JsonValue, JsonValue>(
+                        new JsonValue { Value = null, ValueKind = JsonValueKind.Undefined },
+                        new JsonValue { Value = true, ValueKind = JsonValueKind.True })
                 });
         }
     }
