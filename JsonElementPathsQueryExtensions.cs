@@ -26,6 +26,20 @@ namespace dynamic_iteration
             return PathsAndValues(element, prefix).ToDictionary();
         }
 
+        public static Dictionary<string, Tuple<JsonValue, JsonValue>> Diff(this JsonElement element, JsonElement other, string prefix = "")
+        {
+            return element.PathsAndValuesDictionary().Diff(other.PathsAndValuesDictionary());
+        }
+
+        public static Dictionary<string, Tuple<JsonValue, JsonValue>> Diff(this Dictionary<string, JsonValue> dict1, Dictionary<string, JsonValue> dict2)
+        {
+            var keysOnlyInDict1 = dict1.Keys.Except(dict2.Keys);
+            var commonKeys = dict1.Keys.Intersect(dict2.Keys);
+            var differentValues = commonKeys.Where(key => !dict1[key].Value.Equals(dict2[key].Value));
+            var diffKeys = keysOnlyInDict1.Union(differentValues).Union(dict2.Keys.Except(dict1.Keys));
+            return diffKeys.ToDictionary(key => key, key => Tuple.Create(dict1.ContainsKey(key) ? dict1[key] : null, dict2.ContainsKey(key) ? dict2[key] : null));
+        }
+
         #region Helpers
 
         private static List<PathAndValue> PathsAndValues(this JsonElement element, string prefix = "")
