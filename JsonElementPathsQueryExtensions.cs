@@ -13,9 +13,22 @@ namespace dynamic_iteration
         public JsonValueKind ValueKind { get; set; }
     }
 
+    public class JsonValue
+    {
+        public object Value { get; set; }
+        public JsonValueKind ValueKind { get; set; }
+    }
+
     public static class JsonElementPathsQueryExtensions
     {
-        public static List<PathAndValue> PathsAndValues(this JsonElement element, string prefix = "")
+        public static Dictionary<string, JsonValue> PathsAndValuesDictionary(this JsonElement element, string prefix = "")
+        {
+            return PathsAndValues(element, prefix).ToDictionary();
+        }
+
+        #region Helpers
+
+        private static List<PathAndValue> PathsAndValues(this JsonElement element, string prefix = "")
         {
             return IsIterable(element)
                 ? PropsFrom(element).SelectMany(AllSubPathsWith(prefix)).ToList()
@@ -29,7 +42,14 @@ namespace dynamic_iteration
                 };
         }
 
-        #region Helpers
+        private static Dictionary<string, JsonValue> ToDictionary(this IEnumerable<PathAndValue> pathAndValues)
+        {
+            return pathAndValues.ToDictionary(p => p.Path, p => new JsonValue
+            {
+                Value = p.Value,
+                ValueKind = p.ValueKind
+            });
+        }
 
         private class Property
         {
