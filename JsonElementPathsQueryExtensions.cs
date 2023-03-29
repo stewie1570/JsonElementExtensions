@@ -10,11 +10,51 @@ namespace dynamic_iteration
     {
         public string Path { get; set; }
         public object Value { get; set; }
+        public JsonValueKind ValueKind { get; set; }
+    }
+
+    public class JsonValue
+    {
+        public object Value { get; set; }
+        public JsonValueKind ValueKind { get; set; }
+
+        public static JsonValue Undefined => new JsonValue
+        {
+            Value = null,
+            ValueKind = JsonValueKind.Undefined
+        };
     }
 
     public static class JsonElementPathsQueryExtensions
     {
-        public static List<PathAndValue> PathsAndValues(this JsonElement element, string prefix = "")
+        public static Dictionary<string, JsonValue> PathsAndValuesDictionary(this JsonElement element, string prefix = "")
+        {
+            return PathsAndValues(element, prefix).ToDictionary();
+        }
+
+        public static Dictionary<string, Tuple<JsonValue, JsonValue>> DiffWith(this JsonElement element, JsonElement other)
+        {
+            return element.PathsAndValuesDictionary().DiffWith(other.PathsAndValuesDictionary());
+        }
+
+        public static Dictionary<string, Tuple<JsonValue, JsonValue>> DiffWith(this Dictionary<string, JsonValue> dict1, Dictionary<string, JsonValue> dict2)
+        {
+            var disctinctKeys = dict1.Keys.Concat(dict2.Keys).Distinct();
+            return disctinctKeys
+                .Where(key => dict1.ContainsKey(key) != dict2.ContainsKey(key)
+                    || !dict1[key].Value.Equals(dict2[key].Value))
+                .ToDictionary(
+                    key => key,
+                    key => Tuple.Create(
+                        dict1.ContainsKey(key) ? dict1[key] : JsonValue.Undefined,
+                        dict2.ContainsKey(key) ? dict2[key] : JsonValue.Undefined
+                    )
+                );
+        }
+
+        #region Helpers
+
+        private static List<PathAndValue> PathsAndValues(this JsonElement element, string prefix = "")
         {
             return IsIterable(element)
                 ? PropsFrom(element).SelectMany(AllSubPathsWith(prefix)).ToList()
@@ -22,12 +62,20 @@ namespace dynamic_iteration
                     new PathAndValue
                     {
                         Path = prefix,
-                        Value = element.ToValue()
+                        Value = element.ToValue(),
+                        ValueKind = element.ValueKind
                     }
                 };
         }
 
-        #region Helpers
+        private static Dictionary<string, JsonValue> ToDictionary(this IEnumerable<PathAndValue> pathAndValues)
+        {
+            return pathAndValues.ToDictionary(p => p.Path, p => new JsonValue
+            {
+                Value = p.Value,
+                ValueKind = p.ValueKind
+            });
+        }
 
         private class Property
         {
@@ -43,7 +91,8 @@ namespace dynamic_iteration
                 .Select(subPath => new PathAndValue
                 {
                     Path = subPath.Path.PrefixWith(prefix),
-                    Value = subPath.Value
+                    Value = subPath.Value,
+                    ValueKind = subPath.ValueKind
                 });
 
         private static object ToValue(this JsonElement element)
