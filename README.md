@@ -69,4 +69,45 @@ public void FilteringToKnownPaths()
             new PathAndValue { Path = "contacts.1.info.number", Value = 12 }
         });
 }
+
+[Fact]
+public void DiffsTwoJsonDocuments()
+{
+    var left = JsonDocument.Parse(@"{
+        ""prop1"": { ""prop2"": 1 },
+        ""contacts"": [
+            { ""info"": { ""name"": ""Stewie"" } },
+            { ""info"": { ""number"": 12 } },
+            { ""info"": { ""isAwesome"": true } }
+        ]
+    }");
+
+    var right = JsonDocument.Parse(@"{
+        ""prop1"": { ""prop2"": ""value2"" },
+        ""contacts"": [
+            { ""info"": { ""name"": ""Stewie"" } },
+            { ""info"": { ""number"": 13 } },
+            { ""info"": { ""isAwesome"": false } },
+            { ""info"": { ""isSomething"": true } }
+        ]
+    }");
+
+    left.RootElement.DiffWith(right.RootElement)
+        .Should()
+        .BeEquivalentTo(new Dictionary<string, Tuple<JsonValue, JsonValue>>
+        {
+            ["prop1.prop2"] = new Tuple<JsonValue, JsonValue>(
+                new JsonValue { Value = 1, ValueKind = JsonValueKind.Number },
+                new JsonValue { Value = "value2", ValueKind = JsonValueKind.String }),
+            ["contacts.1.info.number"] = new Tuple<JsonValue, JsonValue>(
+                new JsonValue { Value = 12, ValueKind = JsonValueKind.Number },
+                new JsonValue { Value = 13, ValueKind = JsonValueKind.Number }),
+            ["contacts.2.info.isAwesome"] = new Tuple<JsonValue, JsonValue>(
+                new JsonValue { Value = true, ValueKind = JsonValueKind.True },
+                new JsonValue { Value = false, ValueKind = JsonValueKind.False }),
+            ["contacts.3.info.isSomething"] = new Tuple<JsonValue, JsonValue>(
+                new JsonValue { Value = null, ValueKind = JsonValueKind.Undefined },
+                new JsonValue { Value = true, ValueKind = JsonValueKind.True })
+        });
+}
 ```
