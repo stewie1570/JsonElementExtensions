@@ -23,6 +23,7 @@ JsonDocument
     .Parse(json)
     .RootElement
     .PathsAndValuesDictionary()
+    .OrderBy(value => value.Key)
     .Select(value => value.Key)
     .ToList()
     .ForEach(Console.WriteLine);
